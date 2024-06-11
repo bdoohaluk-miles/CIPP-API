@@ -1,0 +1,71 @@
+{
+  "style": "Table",
+  "Fields": [
+    {
+      "FrontendFields": [
+        {
+          "name": "Sharing capability",
+          "formatter": "string",
+          "value": "SharepointSettings.sharingCapability"
+        },
+        {
+          "name": "Mac Sync Enabled",
+          "formatter": "warnBool",
+          "value": "SharepointSettings.isMacSyncAppEnabled"
+        },
+        {
+          "name": "Resharing by external users",
+          "formatter": "reverseBool",
+          "value": "isResharingByExternalUsersEnabled"
+        },
+        {
+          "name": "Allow users to sync from unmanaged devices",
+          "formatter": "bool",
+          "value": "SharepointSettings.isUnmanagedSyncAppForTenantRestricted"
+        },
+        {
+          "name": "Site creation by standards users enabled",
+          "formatter": "reverseBool",
+          "value": "SharepointSettings.isSiteCreationEnabled"
+        },
+        {
+          "name": "Deleted user data rention(days)",
+          "formatter": "string",
+          "value": "SharepointSettings.deletedUserPersonalSiteRetentionPeriodInDays"
+        }
+      ],
+      "name": "SharepointSettings",
+      "URL": "https://graph.microsoft.com/beta/admin/sharepoint/settings",
+      "ExtractFields": [
+        "sharingCapability",
+        "isMacSyncAppEnabled",
+        "isResharingByExternalUsersEnabled",
+        "isUnmanagedSyncAppForTenantRestricted",
+        "isSiteCreationEnabled",
+        "deletedUserPersonalSiteRetentionPeriodInDays"
+      ],
+      "UseExistingInfo": false,
+      "StoreAs": "JSON",
+      "API": "Graph"
+    },
+    {
+      "URL": "https://graph.microsoft.com/beta/policies/activityBasedTimeoutPolicies",
+      "ExtractFields": [
+        "definition"
+      ],
+      "FrontendFields": [
+        {
+          "name": "Web Time-Out enabled",
+          "formatter": "bool",
+          "value": "WebtimeOut"
+        }
+      ],
+      "StoreAs": "bool",
+      "UseExistingInfo": false,
+      "where": "$_.definition -like '*WebSessionIdleTimeout*'",
+      "name": "WebtimeOut",
+      "API": "Graph"
+    }
+  ],
+  "name": "TestReport"
+}
