@@ -9,25 +9,33 @@ function Invoke-CIPPStandardAntiPhishPolicy {
 
     $CurrentState = New-ExoRequest -tenantid $Tenant -cmdlet 'Get-AntiPhishPolicy' |
         Where-Object -Property Name -EQ $PolicyName |
-        Select-Object Name, Enabled, PhishThresholdLevel, EnableMailboxIntelligence, EnableMailboxIntelligenceProtection, EnableSpoofIntelligence, EnableFirstContactSafetyTips, EnableSimilarUsersSafetyTips, EnableSimilarDomainsSafetyTips, EnableUnusualCharactersSafetyTips, EnableUnauthenticatedSender, EnableViaTag, MailboxIntelligenceProtectionAction, MailboxIntelligenceQuarantineTag
+        Select-Object Name, Enabled, EnableSpoofIntelligence, HonorDmarcPolicy, DmarcQuarantineAction, DmarcRejectAction, AuthenticationFailAction, SpoofQuarantineTag, EnableFirstContactSafetyTips, EnableUnauthenticatedSender, EnableViaTag, PhishThresholdLevel, EnableOrganizationDomainsProtection, EnableMailboxIntelligence, EnableMailboxIntelligenceProtection, TargetedUserProtectionAction, TargetedUserQuarantineTag, TargetedDomainProtectionAction, TargetedDomainQuarantineTag, MailboxIntelligenceProtectionAction, MailboxIntelligenceQuarantineTag, EnableSimilarUsersSafetyTips, EnableSimilarDomainsSafetyTips, EnableUnusualCharactersSafetyTips
 
     $StateIsCorrect = ($CurrentState.Name -eq $PolicyName) -and
-                      ($CurrentState.Enabled -eq $true) -and
-                      ($CurrentState.PhishThresholdLevel -eq $Settings.PhishThresholdLevel) -and
-                      ($CurrentState.EnableMailboxIntelligence -eq $true) -and
-                      ($CurrentState.EnableMailboxIntelligenceProtection -eq $true) -and
-                      ($CurrentState.EnableSpoofIntelligence -eq $true) -and
+                      ($CurrentState.Enabled -eq $true) -and              
+                      ($CurrentState.EnableSpoofIntelligence -eq $Settings.EnableSpoofIntelligence) -and
+                      ($CurrentState.HonorDmarcPolicy -eq $Settings.HonorDmarcPolicy) -and
+                      ($CurrentState.DmarcQuarantineAction -eq $Settings.DmarcQuarantineAction) -and
+                      ($CurrentState.DmarcRejectAction -eq $Settings.DmarcRejectAction) -and
+                      ($CurrentState.AuthenticationFailAction -eq $Settings.AuthenticationFailAction) -and
+                      ($CurrentState.SpoofQuarantineTag -eq $Settings.SpoofQuarantineTag) -and
                       ($CurrentState.EnableFirstContactSafetyTips -eq $Settings.EnableFirstContactSafetyTips) -and
-                      ($CurrentState.EnableSimilarUsersSafetyTips -eq $Settings.EnableSimilarUsersSafetyTips) -and
-                      ($CurrentState.EnableSimilarDomainsSafetyTips -eq $Settings.EnableSimilarDomainsSafetyTips) -and
-                      ($CurrentState.EnableUnusualCharactersSafetyTips -eq $Settings.EnableUnusualCharactersSafetyTips) -and
-                      ($CurrentState.EnableUnauthenticatedSender -eq $true) -and
-                      ($CurrentState.EnableViaTag -eq $true) -and
+                      ($CurrentState.EnableUnauthenticatedSender -eq $Settings.EnableUnauthenticatedSender) -and
+                      ($CurrentState.EnableViaTag -eq $Settings.EnableViaTag) -and
+                      ($CurrentState.PhishThresholdLevel -eq $Settings.PhishThresholdLevel) -and
+                      ($CurrentState.EnableOrganizationDomainsProtection -eq $Settings.EnableOrganizationDomainsProtection) -and
+                      ($CurrentState.EnableMailboxIntelligence -eq $Settings.EnableMailboxIntelligence) -and
+                      ($CurrentState.EnableMailboxIntelligenceProtection -eq $Settings.EnableMailboxIntelligenceProtection) -and
+                      ($CurrentState.TargetedUserProtectionAction -eq $Settings.TargetedUserProtectionAction) -and
+                      ($CurrentState.TargetedUserQuarantineTag -eq $Settings.TargetedUserQuarantineTag) -and
+                      ($CurrentState.TargetedDomainProtectionAction -eq $Settings.TargetedDomainProtectionAction) -and
+                      ($CurrentState.TargetedDomainQuarantineTag -eq $Settings.TargetedDomainQuarantineTag) -and
                       ($CurrentState.MailboxIntelligenceProtectionAction -eq $Settings.MailboxIntelligenceProtectionAction) -and
                       ($CurrentState.MailboxIntelligenceQuarantineTag -eq $Settings.MailboxIntelligenceQuarantineTag) -and
-                      ($CurrentState.TargetedUserProtectionAction -eq $Settings.TargetedUserProtectionAction) -and
-                      ($CurrentState.TargetedDomainProtectionAction -eq $Settings.TargetedDomainProtectionAction) -and
-                      ($CurrentState.EnableOrganizationDomainsProtection -eq $true)
+                      ($CurrentState.EnableSimilarUsersSafetyTips -eq $Settings.EnableSimilarUsersSafetyTips) -and
+                      ($CurrentState.EnableSimilarDomainsSafetyTips -eq $Settings.EnableSimilarDomainsSafetyTips) -and
+                      ($CurrentState.EnableUnusualCharactersSafetyTips -eq $Settings.EnableUnusualCharactersSafetyTips)
+
 
     $AcceptedDomains = New-ExoRequest -tenantid $Tenant -cmdlet 'Get-AcceptedDomain'
 
@@ -46,21 +54,28 @@ function Invoke-CIPPStandardAntiPhishPolicy {
         } else {
             $cmdparams = @{
                 Enabled                             = $true
-                PhishThresholdLevel                 = $Settings.PhishThresholdLevel
-                EnableMailboxIntelligence           = $true
-                EnableMailboxIntelligenceProtection = $true
-                EnableSpoofIntelligence             = $true
+                EnableSpoofIntelligence             = $Settings.EnableSpoofIntelligence
+                HonorDmarcPolicy                    = $Settings.HonorDmarcPolicy
+                DmarcQuarantineAction               = $Settings.DmarcQuarantineAction
+                DmarcRejectAction                   = $Settings.DmarcRejectAction
+                AuthenticationFailAction            = $Settings.AuthenticationFailAction
+                SpoofQuarantineTag                  = $Settings.SpoofQuarantineTag
                 EnableFirstContactSafetyTips        = $Settings.EnableFirstContactSafetyTips
+                EnableUnauthenticatedSender         = $Settings.EnableUnauthenticatedSender
+                EnableViaTag                        = $Settings.EnableViaTag
+                PhishThresholdLevel                 = $Settings.PhishThresholdLevel
+                EnableOrganizationDomainsProtection = $Settings.EnableOrganizationDomainsProtection 
+                EnableMailboxIntelligence           = $Settings.EnableMailboxIntelligence
+                EnableMailboxIntelligenceProtection = $Settings.EnableMailboxIntelligenceProtection
+                TargetedUserProtectionAction        = $Settings.TargetedUserProtectionAction
+                TargetedUserQuarantineTag           = $Settings.TargetedUserQuarantineTag
+                TargetedDomainProtectionAction      = $Settings.TargetedDomainProtectionAction
+                TargetedDomainQuarantineTag         = $Settings.TargetedDomainQuarantineTag
+                MailboxIntelligenceProtectionAction = $Settings.MailboxIntelligenceProtectionAction
+                MailboxIntelligenceQuarantineTag    = $Settings.MailboxIntelligenceQuarantineTag
                 EnableSimilarUsersSafetyTips        = $Settings.EnableSimilarUsersSafetyTips
                 EnableSimilarDomainsSafetyTips      = $Settings.EnableSimilarDomainsSafetyTips
                 EnableUnusualCharactersSafetyTips   = $Settings.EnableUnusualCharactersSafetyTips
-                EnableUnauthenticatedSender         = $true
-                EnableViaTag                        = $true
-                MailboxIntelligenceProtectionAction = $Settings.MailboxIntelligenceProtectionAction
-                MailboxIntelligenceQuarantineTag    = $Settings.MailboxIntelligenceQuarantineTag
-                TargetedUserProtectionAction        = $Settings.TargetedUserProtectionAction
-                TargetedDomainProtectionAction      = $Settings.TargetedDomainProtectionAction
-                EnableOrganizationDomainsProtection = $true
             }
 
             try {
