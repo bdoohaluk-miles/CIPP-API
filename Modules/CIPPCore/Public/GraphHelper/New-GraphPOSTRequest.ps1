@@ -27,6 +27,7 @@ function New-GraphPOSTRequest {
             $Headers = $Headers
         } else {
             $Headers = Get-GraphToken -tenantid $tenantid -scope $scope -AsApp $asapp -SkipCache $skipTokenCache
+            $body = Get-CIPPTextReplacement -TenantFilter $tenantid -Text $body -EscapeForJson
         }
         if ($AddedHeaders) {
             foreach ($header in $AddedHeaders.GetEnumerator()) {
@@ -41,15 +42,13 @@ function New-GraphPOSTRequest {
         if (!$contentType) {
             $contentType = 'application/json; charset=utf-8'
         }
-        #Only do text replacement if no headers are set.
-        if (!$headers) { $body = Get-CIPPTextReplacement -TenantFilter $tenantid -Text $body -EscapeForJson }
 
         $RetryCount = 0
         $RequestSuccessful = $false
         do {
             try {
                 Write-Information "$($type.ToUpper()) [ $uri ] | tenant: $tenantid | attempt: $($RetryCount + 1) of $maxRetries"
-                $ReturnedData = (Invoke-RestMethod -Uri $($uri) -Method $TYPE -Body $body -Headers $headers -ContentType $contentType -SkipHttpErrorCheck:$IgnoreErrors -ResponseHeadersVariable responseHeaders)
+                $ReturnedData = (Invoke-CIPPRestMethod -Uri $($uri) -Method $TYPE -Body $body -Headers $headers -ContentType $contentType -SkipHttpErrorCheck:$IgnoreErrors -ResponseHeadersVariable responseHeaders)
                 $RequestSuccessful = $true
             } catch {
                 $ShouldRetry = $false
